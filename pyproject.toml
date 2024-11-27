@@ -12,7 +12,7 @@ Changelog = "https://github.com/snejus/beets-importreplace/blob/master/CHANGELOG
 Repository = "https://github.com/snejus/beets-importreplace"
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.8"
 
 beets = ">=1.4.7"
 
