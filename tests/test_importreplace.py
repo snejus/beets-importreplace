@@ -1,8 +1,8 @@
 import unittest
 
-import beets as beets
-from beets.autotag.hooks import AlbumInfo
-from beets.autotag.hooks import TrackInfo
+import beets
+from beets.autotag.hooks import AlbumInfo, TrackInfo
+
 from beetsplug.importreplace import ImportReplace
 
 
@@ -48,7 +48,7 @@ class ImportReplaceTest(unittest.TestCase):
         item_fields: [str] = None,
         album_fields: [str] = None,
         replace: {str: str} = None,
-    ):
+    ) -> None:
         replacement = {}
         if item_fields:
             replacement["item_fields"] = item_fields
@@ -60,7 +60,7 @@ class ImportReplaceTest(unittest.TestCase):
         beets.config["importreplace"]["replacements"].get(list).append(replacement)
 
     def test_replaces_only_config_fields(self):
-        """Check if plugin replaces text in only the specified fields"""
+        """Check if plugin replaces text in only the specified fields."""
         self._add_replacement(
             item_fields=["title"], album_fields=["album"], replace={"The": "A"}
         )
@@ -70,14 +70,15 @@ class ImportReplaceTest(unittest.TestCase):
         )
         subject = ImportReplace()
         subject._albuminfo_received(album_info)
-        self.assertEqual(album_info.album, "A Album")
-        self.assertEqual(album_info.artist, "The Dude")
-        self.assertEqual(album_info.tracks[0].title, "A Piece")
-        self.assertEqual(album_info.tracks[0].artist, "The Dude")
+        assert album_info.album == "A Album"
+        assert album_info.artist == "The Dude"
+        assert album_info.tracks[0].title == "A Piece"
+        assert album_info.tracks[0].artist == "The Dude"
 
     def test_replaces_only_config_fields_multiple(self):
         """Check if plugin replaces text in only the specified fields when
-        multiple replacements given."""
+        multiple replacements given.
+        """
         self._add_replacement(
             item_fields=["title"], album_fields=["album"], replace={"The": "A"}
         )
@@ -90,14 +91,15 @@ class ImportReplaceTest(unittest.TestCase):
         )
         subject = ImportReplace()
         subject._albuminfo_received(album_info)
-        self.assertEqual(album_info.album, "A Album")
-        self.assertEqual(album_info.artist, "The That")
-        self.assertEqual(album_info.tracks[0].title, "A Piece")
-        self.assertEqual(album_info.tracks[0].artist, "The That")
+        assert album_info.album == "A Album"
+        assert album_info.artist == "The That"
+        assert album_info.tracks[0].title == "A Piece"
+        assert album_info.tracks[0].artist == "The That"
 
     def test_handles_empty_fields(self):
         """Verify that plugin works when field marked for replacement
-        is absent"""
+        is absent.
+        """
         self._add_replacement(
             item_fields=["title", "artist"],
             album_fields=["album", "artist"],
@@ -109,14 +111,15 @@ class ImportReplaceTest(unittest.TestCase):
         )
         subject = ImportReplace()
         subject._albuminfo_received(album_info)
-        self.assertEqual(album_info.album, "That Album")
-        self.assertEqual(album_info.artist, None)
-        self.assertEqual(album_info.tracks[0].title, "That Piece")
-        self.assertEqual(album_info.tracks[0].artist, None)
+        assert album_info.album == "That Album"
+        assert album_info.artist is None
+        assert album_info.tracks[0].title == "That Piece"
+        assert album_info.tracks[0].artist is None
 
     def test_replaces_in_order(self):
         """Verify that the plugin replaces fields in the order given in the
-        config."""
+        config.
+        """
         self._add_replacement(
             item_fields=["title"], album_fields=["album"], replace={"The": "This"}
         )
@@ -129,10 +132,10 @@ class ImportReplaceTest(unittest.TestCase):
         )
         subject = ImportReplace()
         subject._albuminfo_received(album_info)
-        self.assertEqual(album_info.album, "That Album")
-        self.assertEqual(album_info.artist, "The Dude")
-        self.assertEqual(album_info.tracks[0].title, "That Piece")
-        self.assertEqual(album_info.tracks[0].artist, "The Dude")
+        assert album_info.album == "That Album"
+        assert album_info.artist == "The Dude"
+        assert album_info.tracks[0].title == "That Piece"
+        assert album_info.tracks[0].artist == "The Dude"
 
     def test_incorrect_field(self):
         """Verify the plugin works when a non-existent field is specified."""
@@ -145,14 +148,15 @@ class ImportReplaceTest(unittest.TestCase):
         )
         subject = ImportReplace()
         subject._albuminfo_received(album_info)
-        self.assertEqual(album_info.album, "The Album")
-        self.assertEqual(album_info.artist, "The Dude")
-        self.assertEqual(album_info.tracks[0].title, "The Piece")
-        self.assertEqual(album_info.tracks[0].artist, "The Dude")
+        assert album_info.album == "The Album"
+        assert album_info.artist == "The Dude"
+        assert album_info.tracks[0].title == "The Piece"
+        assert album_info.tracks[0].artist == "The Dude"
 
     def test_no_fields(self):
         """Verify the plugin works when item_fields or album_fields not
-        given."""
+        given.
+        """
         self._add_replacement(item_fields=["title"], replace={"The": "A"})
         self._add_replacement(album_fields=["artist"], replace={"This": "That"})
         tracks = [self._create_track_info(title="The Piece", artist="The This")]
@@ -161,7 +165,7 @@ class ImportReplaceTest(unittest.TestCase):
         )
         subject = ImportReplace()
         subject._albuminfo_received(album_info)
-        self.assertEqual(album_info.album, "The Album")
-        self.assertEqual(album_info.artist, "The That")
-        self.assertEqual(album_info.tracks[0].title, "A Piece")
-        self.assertEqual(album_info.tracks[0].artist, "The This")
+        assert album_info.album == "The Album"
+        assert album_info.artist == "The That"
+        assert album_info.tracks[0].title == "A Piece"
+        assert album_info.tracks[0].artist == "The This"
