@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "beets-importreplace"
+version = "0.2"
+description = "beets plugin to perform replacements on import metadata"
+authors = ["Edgars Supe"]
+readme = "README.md"
+license = "MIT"
+packages = [{ include = "beetsplug" }]
+
+[tool.poetry.urls]
+Changelog = "https://github.com/snejus/beets-importreplace/blob/master/CHANGELOG.md"
+Repository = "https://github.com/snejus/beets-importreplace"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+
+beets = ">=1.4.7"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
