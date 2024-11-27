@@ -2,7 +2,7 @@ import re
 from functools import reduce
 from re import Pattern
 
-from beets.autotag import TrackInfo, AlbumInfo
+from beets.autotag import AlbumInfo, TrackInfo
 from beets.plugins import BeetsPlugin
 
 
@@ -12,27 +12,27 @@ class ImportReplace(BeetsPlugin):
         self._item_replacements = {}
         self._album_replacements = {}
         self._read_config()
-        self.register_listener('trackinfo_received', self._trackinfo_received)
-        self.register_listener('albuminfo_received', self._albuminfo_received)
+        self.register_listener("trackinfo_received", self._trackinfo_received)
+        self.register_listener("albuminfo_received", self._albuminfo_received)
 
     def _read_config(self):
-        replacements = self.config['replacements']
+        replacements = self.config["replacements"]
         for replacement in replacements:
             patterns = self._extract_patterns(replacement)
             if patterns:
-                if 'item_fields' in replacement.keys():
+                if "item_fields" in replacement.keys():
                     self._extract_item_fields(
-                        patterns,
-                        replacement['item_fields'].as_str_seq())
-                if 'album_fields' in replacement.keys():
+                        patterns, replacement["item_fields"].as_str_seq()
+                    )
+                if "album_fields" in replacement.keys():
                     self._extract_album_fields(
-                        patterns,
-                        replacement['album_fields'].as_str_seq())
+                        patterns, replacement["album_fields"].as_str_seq()
+                    )
 
     @staticmethod
     def _extract_patterns(replacement) -> [(Pattern, str)]:
         patterns = []
-        for pattern, repl in replacement['replace'].get(dict).items():
+        for pattern, repl in replacement["replace"].get(dict).items():
             patterns.append((re.compile(pattern), repl))
         return patterns
 
@@ -69,7 +69,6 @@ class ImportReplace(BeetsPlugin):
             self._trackinfo_received(track)
 
     def _replace_field(self, text: str, replacements: [(Pattern, str)]) -> str:
-
         return reduce(self._replace, replacements, text)
 
     def _replace(self, text: str, replacement: (Pattern, str)) -> str:
