@@ -18,8 +18,7 @@ class ImportReplace(BeetsPlugin):
     def _read_config(self) -> None:
         replacements = self.config["replacements"]
         for replacement in replacements:
-            patterns = self._extract_patterns(replacement)
-            if patterns:
+            if patterns := self._extract_patterns(replacement):
                 if "item_fields" in replacement:
                     self._extract_item_fields(
                         patterns, replacement["item_fields"].as_str_seq()
@@ -31,10 +30,10 @@ class ImportReplace(BeetsPlugin):
 
     @staticmethod
     def _extract_patterns(replacement) -> [(Pattern, str)]:
-        patterns = []
-        for pattern, repl in replacement["replace"].get(dict).items():
-            patterns.append((re.compile(pattern), repl))
-        return patterns
+        return [
+            (re.compile(pattern), repl)
+            for pattern, repl in replacement["replace"].get(dict).items()
+        ]
 
     def _extract_item_fields(self, patterns, fields) -> None:
         for field in fields:
@@ -53,16 +52,14 @@ class ImportReplace(BeetsPlugin):
     def _trackinfo_received(self, info: TrackInfo) -> None:
         for field, replacements in self._item_replacements.items():
             if field in info:
-                value = info.__getattr__(field)
-                if value:
+                if value := info.__getattr__(field):
                     replaced = self._replace_field(value, replacements)
                     info.__setattr__(field, replaced)
 
     def _albuminfo_received(self, info: AlbumInfo) -> None:
         for field, replacements in self._album_replacements.items():
             if field in info:
-                value = info.__getattr__(field)
-                if value:
+                if value := info.__getattr__(field):
                     replaced = self._replace_field(value, replacements)
                     info.__setattr__(field, replaced)
         for track in info.tracks:
