@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import re
-from functools import reduce
+from functools import reduce, singledispatchmethod
 from re import Pattern
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, List
 
 from beets.plugins import BeetsPlugin
 
@@ -80,5 +80,17 @@ class ImportReplace(BeetsPlugin):
     def _replace_field(self, text: str, replacements: list[Replacement]) -> str:
         return reduce(self._replace, replacements, text)
 
-    def _replace(self, text: str, replacement: Replacement) -> str:
-        return replacement[0].sub(repl=replacement[1], string=text)
+    @singledispatchmethod
+    @classmethod
+    def _replace(cls, value: Any, replacement: Replacement) -> Any:
+        raise NotImplementedError
+
+    @_replace.register(str)
+    @classmethod
+    def _replace_str(cls, value: str, replacement: Replacement) -> str:
+        return replacement[0].sub(repl=replacement[1], string=value)
+
+    @_replace.register(list)
+    @classmethod
+    def _replace_list(cls, value: list[str], replacement: Replacement) -> list[str]:
+        return [cls._replace(item, replacement) for item in value]

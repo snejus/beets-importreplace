@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "beets-importreplace"
-version = "0.2"
+version = "0.3a0"
 description = "beets plugin to perform replacements on import metadata"
 authors = ["Edgars Supe"]
 readme = "README.md"
